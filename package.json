@@ -1,0 +1,71 @@
+{
+  "name": "typebat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "deps": "npm i",
+    "depsg": "npm install -g typescript rimraf",
+    "build": "npm run clean && npm run compile",
+    "cs": "npm run build && npm run start",
+    "compile": "tsc -p ./tsconfig.json",
+    "watch": "tsc -p ./tsconfig.json --watch",
+    "clean": "rimraf ./dist/*",
+    "start": "node ./dist/index.js",
+    "tslint": "tslint './src/**/*.{ts,tsx}'",
+    "tslint:fix": "npm run tslint -- --fix",
+    "tslint:check": "tslint-config-prettier-check ./tslint.json",
+    "prettier": "prettier --write --config ./.prettierrc.js **/*.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kira9204/nobat2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kira9204/nobat2/issues"
+  },
+  "homepage": "https://github.com/Kira9204/nobat2#readme",
+  "devDependencies": {
+    "@types/body-parser": "^1.17.1",
+    "@types/express": "^4.17.2",
+    "@types/html-entities": "^1.2.16",
+    "@types/irc": "^0.3.33",
+    "@types/jsdom": "^12.2.4",
+    "@types/node": "^13.1.0",
+    "@types/node-telegram-bot-api": "^0.40.1",
+    "@types/q": "^1.5.2",
+    "@types/request-promise-native": "^1.0.17",
+    "coffeescript": "^1.12.7",
+    "prettier": "^1.19.1",
+    "rimraf": "^3.0.0",
+    "ts-node": "^8.5.4",
+    "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.1.0",
+    "typescript": "^3.7.4"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "bufferutil": "^4.0.1",
+    "discord.js": "^11.5.1",
+    "express": "^4.17.1",
+    "ffmpeg-static": "^2.7.0",
+    "hangupsjs": "^1.3.8",
+    "html-entities": "^1.2.1",
+    "irc": "^0.5.2",
+    "jsdom": "^15.2.1",
+    "m3u8stream": "^0.6.3",
+    "moment": "^2.24.0",
+    "node-gyp": "^5.0.7",
+    "node-opus": "^0.3.3",
+    "node-telegram-bot-api": "^0.40.0",
+    "q": "^1.5.1",
+    "re-require-module": "^1.0.2",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.8",
+    "ytdl-core": "^1.0.4",
+    "zlib": "^1.0.5"
+  }
+}

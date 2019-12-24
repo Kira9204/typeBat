@@ -1,0 +1,63 @@
+{
+  "webapi": {
+    "enabled": false,
+    "port": 3002,
+    "context": "/api/v1"
+  },
+  "services": {
+    "irc": [{
+      "enabled": false,
+      "name": "OFTC IRC",
+      "trigger": "!",
+      "host": "...",
+      "port": 6697,
+      "secure": true,
+      "nick": "typeBat",
+      "channels": [
+        "#...",
+      ],
+      "disabledPlugins": [],
+      "ignoreUsers": []
+    }],
+    "discord": [{
+      "enabled": true,
+      "name": "Discord server",
+      "trigger": "!",
+      "token": "",
+      "targetChannelId": "...",
+      "targetVoiceChannelId": "...",
+      "disabledPlugins": [{
+        "channel": "...",
+        "plugins": ["PLUGIN_WEB_TITLE"]
+      }
+      ],
+      "ignoreUsers": ["...", "..."]
+    }],
+    "telegram": [{
+      "enabled": false,
+      "name": "Telegram server",
+      "trigger": "!",
+      "token": "...",
+      "targetChannelId": "...",
+      "disabledPlugins": [],
+      "ignoreUsers": []
+    }],
+    "hangouts": [{
+      "enabled": false,
+      "name": "Hangouts server",
+      "trigger": "!",
+      "cookies": [
+        "NID=",
+        "SID=",
+        "HSID=",
+        "SSID=",
+        "APISID=",
+        "SAPISID="
+      ],
+      "gaiaId": "...",
+      "targetChannelId": "...",
+      "disabledPlugins": [],
+      "ignoreUsers": []
+    }]
+  }
+}

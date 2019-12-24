@@ -1,0 +1,14 @@
+{
+    "defaultSeverity": "warning",
+    "jsRules": {},
+    "rules": {
+        "no-console": false,
+        "no-require-imports": false,
+        "no-var-requires": false,
+        "radix": false,
+        "object-literal-sort-keys": false,
+        "ban-types": false
+    },
+    "rulesDirectory": [],
+    "extends": ["tslint:latest", "tslint-config-prettier"]
+}
