@@ -19,7 +19,11 @@ export enum PROTOCOL {
   TELEGRAM = 'TELEGRAM'
 }
 
-export type IClientService = IrcClient | DiscordClient | HangoutsClient | TelegramClient;
+export type IClientService =
+  | IrcClient
+  | DiscordClient
+  | HangoutsClient
+  | TelegramClient;
 export interface IClientMessage {
   type: MSG_TYPE;
   protocol: PROTOCOL;

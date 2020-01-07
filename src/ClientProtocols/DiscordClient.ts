@@ -2,7 +2,7 @@ import Discord from 'discord.js';
 import ytdl from 'ytdl-core';
 import PluginsController from '../Plugins/PluginsController';
 import * as webService from '../Services/WebService';
-import Jukebox, { IPlaylistItem, MP3s } from "./Shared/Jukebox";
+import Jukebox, { IPlaylistItem, MP3s } from './Shared/Jukebox';
 import fs from 'fs';
 
 // Used by discord internally when streaming music
@@ -109,7 +109,7 @@ class DiscordClient implements IClientProtocol {
     }
 
     if (!this.jukebox.onChannelMessage(msgObj)) {
-      //this.pluginsController.trigger(msgObj);
+      this.pluginsController.trigger(msgObj);
     }
   }
 
@@ -119,12 +119,14 @@ class DiscordClient implements IClientProtocol {
     const isInChannel = this.client.voiceConnections.array().length !== 0;
 
     const getAuthorVoiceChannel = () => {
-      // @ts-ignore
-      const voiceChannelArray = this.lastMsg.guild.channels.filter((v)=>v.type === "voice").filter((v)=>v.members.has(this.lastMsg.author.id)).array();
-      if(voiceChannelArray.length === 0) {
+      const voiceChannelArray = this.lastMsg.guild.channels
+        .filter((v) => v.type === 'voice')
+          // @ts-ignore
+        .filter((v) => v.members.has(this.lastMsg.author.id))
+        .array();
+      if (voiceChannelArray.length === 0) {
         return null;
-      }
-      else {
+      } else {
         return voiceChannelArray[0];
       }
     };
@@ -148,29 +150,39 @@ class DiscordClient implements IClientProtocol {
           this.streamDispatcher.end();
         }
         // @ts-ignore
-        this.streamDispatcher = this.voiceConnection.playStream(stream, { volume: this.jukebox.volume });
+        this.streamDispatcher = this.voiceConnection.playStream(stream, {
+          volume: this.jukebox.volume
+        });
       } else if (webService.REGEXP.SOUNDCLOUD.test(playlistItem.url)) {
         //Just inspect the XHR requests in the browser for this
         const CLIENT_ID = 'YUKXoArFcqrlQn9tfNHvvyfnDISj04zk';
-        webService.downloadPage(playlistItem.url).then(dataStr1 => {
+        webService.downloadPage(playlistItem.url).then((dataStr1) => {
           let found = dataStr1.indexOf('/stream/hls');
-          let hlsUrl = dataStr1.substring(found-100, found+11);
-          webService.downloadPage(hlsUrl+'?client_id='+CLIENT_ID).then(dataStr2 => {
-            this.say('Now Playing: ' + playlistItem.title, this.lastMsgChannelId);
-            const obj = JSON.parse(dataStr2);
-            const streamUrl = obj.url;
-            if (this.streamDispatcher) {
-              this.streamDispatcher.end();
-            }
-            // @ts-ignore
-            this.streamDispatcher = this.voiceConnection.playStream(m3u8stream(streamUrl, {parser: 'm3u8'}), { volume: this.jukebox.volume });
-            appendStreamDispatcherEnd();
-          });
+          let hlsUrl = dataStr1.substring(found - 100, found + 11);
+          webService
+            .downloadPage(hlsUrl + '?client_id=' + CLIENT_ID)
+            .then((dataStr2) => {
+              this.say(
+                'Now Playing: ' + playlistItem.title,
+                this.lastMsgChannelId
+              );
+              const obj = JSON.parse(dataStr2);
+              const streamUrl = obj.url;
+              if (this.streamDispatcher) {
+                this.streamDispatcher.end();
+              }
+              // @ts-ignore
+              this.streamDispatcher = this.voiceConnection.playStream(
+                m3u8stream(streamUrl, { parser: 'm3u8' }),
+                { volume: this.jukebox.volume }
+              );
+              appendStreamDispatcherEnd();
+            });
         });
       }
       //Memes - testing. No this isn't pretty.
       else if (MP3s.includes(playlistItem.url)) {
-        const soundFile = './sounds/'+playlistItem.url+'.mp3';
+        const soundFile = './sounds/' + playlistItem.url + '.mp3';
         if (!fs.existsSync(soundFile)) {
           return;
         }
@@ -188,8 +200,11 @@ class DiscordClient implements IClientProtocol {
         if (this.streamDispatcher) {
           this.streamDispatcher.end();
         }
-        // @ts-ignore
-        this.streamDispatcher = this.voiceConnection.playStream(request(playlistItem.url), { volume: this.jukebox.volume });
+        this.streamDispatcher = this.voiceConnection.playStream(
+          // @ts-ignore
+          request(playlistItem.url),
+          { volume: this.jukebox.volume }
+        );
         appendStreamDispatcherEnd();
       }
     };
@@ -262,7 +277,10 @@ class DiscordClient implements IClientProtocol {
     this.jukebox.currentSong++;
 
     if (this.jukebox.playList.length > this.jukebox.currentSong) {
-      this.playSound(this.jukebox.playList[this.jukebox.currentSong], this.playNext);
+      this.playSound(
+        this.jukebox.playList[this.jukebox.currentSong],
+        this.playNext
+      );
     } else {
       this.stopSound();
     }
@@ -311,14 +329,11 @@ class DiscordClient implements IClientProtocol {
     if (!to && this.lastMsgChannelId.length === 0) {
       return;
     }
-    const channelId = to ? to: this.config.targetChannelId;
+    const channelId = to ? to : this.config.targetChannelId;
     const channel = this.client.channels.get(channelId);
     if (!channel) {
       // Our client is not ready yet, or it isn't connected to the network.
-      console.log(
-        'DiscordClient: Could not find channel',
-        channelId
-      );
+      console.log('DiscordClient: Could not find channel', channelId);
     }
 
     // @ts-ignore

@@ -91,15 +91,24 @@ class VimeoTitle implements IPluginChildInterface {
 
     const videoId = this.getVideoId(message);
     const apiUrl = `https://vimeo.com/api/v2/video/${videoId}.json`;
-    webService.downloadPage(apiUrl).then((data: string) => {
-      const videoInfo: boolean | iVideoModel = constructModel(data);
-      if (!videoInfo) {
-        return;
-      }
-      const retString = `Title: ${videoInfo.title}. Channel: ${videoInfo.channel}. Views: ${videoInfo.numPlays}. Duration: ${videoInfo.duration}. Likes: ${videoInfo.likes}`;
+    webService
+      .downloadPage(apiUrl)
+      .then((data: string) => {
+        const videoInfo: boolean | iVideoModel = constructModel(data);
+        if (!videoInfo) {
+          return;
+        }
+        const retString = `Title: ${videoInfo.title}. Channel: ${
+          videoInfo.channel
+        }. ${
+          videoInfo.numPlays !== '' ? `Views: ${videoInfo.numPlays}.` : ''
+        } Duration: ${videoInfo.duration}. ${
+          videoInfo.likes !== '' ? `Likes: ${videoInfo.likes}` : ''
+        }`;
 
-      clientService.say(retString, channel);
-    }).catch(e => {});
+        clientService.say(retString, channel);
+      })
+      .catch((e) => {});
   }
 }
 

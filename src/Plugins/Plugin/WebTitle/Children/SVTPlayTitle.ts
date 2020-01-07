@@ -60,7 +60,9 @@ class SVTPlayTitle implements IPluginChildInterface {
         if (!dom) {
           return;
         }
-        const videoEl = dom.window.document.querySelector('video[data-video-id]');
+        const videoEl = dom.window.document.querySelector(
+          'video[data-video-id]'
+        );
         if (!videoEl) {
           return;
         }
@@ -69,15 +71,19 @@ class SVTPlayTitle implements IPluginChildInterface {
           return;
         }
         return attr;
-      }).catch(e => {})
+      })
+      .catch((e) => {})
       .then((data: string) => {
         const svtRequest = `http://www.svt.se/videoplayer-api/video/${data}`;
-        webService.downloadPage(svtRequest).then((data2: string) => {
-          const videoData = constructModel(data2);
-          const retString = `Show: ${videoData.showTitle}. Episode: ${videoData.episodeTitle}. Duration: ${videoData.duration}.`;
+        webService
+          .downloadPage(svtRequest)
+          .then((data2: string) => {
+            const videoData = constructModel(data2);
+            const retString = `Show: ${videoData.showTitle}. Episode: ${videoData.episodeTitle}. Duration: ${videoData.duration}.`;
 
-          clientService.say(retString, channel);
-        }).catch(e => {});
+            clientService.say(retString, channel);
+          })
+          .catch((e) => {});
       });
   }
 }

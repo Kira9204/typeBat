@@ -24,7 +24,7 @@ export interface ITypeIRCServiceConfig {
   trigger: string;
   host: string;
   port: number;
-  secure?: boolean,
+  secure?: boolean;
   nick: string;
   channels: string[];
   disabledPlugins: IDisabledPlugin[];
@@ -51,7 +51,6 @@ export interface ITypeTelegramServiceConfig {
   disabledPlugins: IDisabledPlugin[];
   ignoreUsers: string[];
 }
-
 
 export interface ITypeHangoutsServiceConfig {
   enabled: boolean;

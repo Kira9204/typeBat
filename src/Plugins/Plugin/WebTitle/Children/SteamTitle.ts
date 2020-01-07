@@ -99,29 +99,32 @@ class SteamTitle implements IPluginChildInterface {
       return;
     }
     const apiUrl = `https://store.steampowered.com/api/appdetails?appids=${gameId}&cc=SV`;
-    webService.downloadPage(apiUrl).then(
-      function(data: string) {
-        const gameInfo = constructModel(data, gameId);
-        if (!gameInfo) {
-          return false;
-        }
+    webService
+      .downloadPage(apiUrl)
+      .then(
+        function(data: string) {
+          const gameInfo = constructModel(data, gameId);
+          if (!gameInfo) {
+            return false;
+          }
 
-        // @ts-ignore
-        let retString = `Title: ${gameInfo.name}`;
-        // @ts-ignore
-        if (gameInfo.discount > 0) {
           // @ts-ignore
-          retString += ` Price: ${gameInfo.price} (${gameInfo.discount}% off!).`;
-        } else {
+          let retString = `Title: ${gameInfo.name}`;
           // @ts-ignore
-          retString += ` Price: ${gameInfo.price}.`;
-        }
-        // @ts-ignore
-        retString += ` Recommendations: ${gameInfo.recommendations}.`;
+          if (gameInfo.discount > 0) {
+            // @ts-ignore
+            retString += ` Price: ${gameInfo.price} (${gameInfo.discount}% off!).`;
+          } else {
+            // @ts-ignore
+            retString += ` Price: ${gameInfo.price}.`;
+          }
+          // @ts-ignore
+          retString += ` Recommendations: ${gameInfo.recommendations}.`;
 
-        clientService.say(retString, channel);
-      }.bind(this)
-    ).catch(e => {});
+          clientService.say(retString, channel);
+        }.bind(this)
+      )
+      .catch((e) => {});
   }
 }
 

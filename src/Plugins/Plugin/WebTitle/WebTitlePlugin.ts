@@ -55,12 +55,15 @@ class WebTitlePlugin implements IPluginInterface {
       if (webService.parseUrl(part)) {
         let valid = false;
         // Notice: The web site might block HEAD requests
-        await webService.getHeaders(part).then(res => {
-          const ct = res.headers['content-type'];
-          valid = ct.startsWith('text/');
-        }).catch(e => {
-          valid = false;
-        });
+        await webService
+          .getHeaders(part)
+          .then((res) => {
+            const ct = res.headers['content-type'];
+            valid = ct.startsWith('text/');
+          })
+          .catch((e) => {
+            valid = false;
+          });
         return valid;
       }
     }
@@ -87,7 +90,12 @@ class WebTitlePlugin implements IPluginInterface {
             messageObj.isSmallMessage
           )
         ) {
-          service.trigger(part, messageObj.channel, messageObj.clientService, messageObj.isSmallMessage);
+          service.trigger(
+            part,
+            messageObj.channel,
+            messageObj.clientService,
+            messageObj.isSmallMessage
+          );
           return;
         }
       }

@@ -1,33 +1,15 @@
 import * as webService from '../../../../Services/WebService';
 import { IClientService } from '../../../../Types/ClientMessage';
 import { IPluginChildInterface } from '../../../../Types/PluginInterface';
-import { API_KEY_TWITCH } from './Constants';
 import { formatNumber } from './PriceFormatter';
 
-const constructModel = (data: string) => {
-  const obj = JSON.parse(data);
-
-  const status = obj.status;
-  let game = obj.game;
-  if (game == null) {
-    game = 'Event';
-  }
-  const streamer = obj.display_name;
-  const views = obj.views;
-  const followers = obj.followers;
-
-  return {
-    followers: formatNumber(followers),
-    game,
-    status,
-    streamer,
-    views: formatNumber(views)
-  };
-};
+// @ts-ignore
+import { API_KEYS } from '../../../../../apikeys';
+const API_KEY_TWITCH = API_KEYS.TWITCH;
 
 class TwitchTitle implements IPluginChildInterface {
   constructor() {
-    this.getVideoId = this.getVideoId.bind(this);
+    this.getUserName = this.getUserName.bind(this);
     this.supportsAction = this.supportsAction.bind(this);
     this.trigger = this.trigger.bind(this);
   }
@@ -40,7 +22,7 @@ class TwitchTitle implements IPluginChildInterface {
     return webService.REGEXP.TWITCH.test(message);
   }
 
-  public getVideoId(input: string) {
+  public getUserName(input: string) {
     const match = webService.REGEXP.TWITCH.exec(input);
     if (match == null || match[1] === undefined) {
       return false;
@@ -55,20 +37,35 @@ class TwitchTitle implements IPluginChildInterface {
   ) {
     if (
       !this.supportsAction(message, channel, clientService) ||
-      !this.getVideoId(message)
+      !this.getUserName(message)
     ) {
       return;
     }
 
-    const videoId = this.getVideoId(message);
-    const apiUrl = `https://api.twitch.tv/kraken/channels/${videoId}?client_id=${API_KEY_TWITCH}`;
+    const userName = this.getUserName(message);
+    const apiUrl = `https://api.twitch.tv/helix/streams?user_login=${userName}`;
 
-    webService.downloadPage(apiUrl).then((data: string) => {
-      const videoInfo = constructModel(data);
-      const retString = `Title: ${videoInfo.status}. Channel: ${videoInfo.streamer}. Views: ${videoInfo.views}. Followers: ${videoInfo.followers}`;
+    webService
+      .downloadPage(apiUrl, { 'Client-ID': API_KEY_TWITCH })
+      .then((data: string) => {
+        const parsedObj = JSON.parse(data);
+        if (parsedObj.data.length === 0) {
+          clientService.say(
+            'No twitch stream data from API (User offline)',
+            channel
+          );
+          return;
+        }
 
-      clientService.say(retString, channel);
-    }).catch(e => {});
+        const streamObj = parsedObj.data[0];
+        const userName = streamObj.user_name;
+        const title = streamObj.title;
+        const viewerCount = formatNumber(streamObj.viewer_count);
+
+        const retString = `Title: ${title}. User: ${userName}. Viewers: ${viewerCount}`;
+        clientService.say(retString, channel);
+      })
+      .catch((e) => {});
   }
 }
 

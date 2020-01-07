@@ -64,10 +64,7 @@ class TelegramClient implements IClientProtocol {
   }
 
   public say(message: string, to?: string | null) {
-    if (!to && this.lastMsgChannelId === 0) {
-      return;
-    }
-    const channelId = to ? to: this.config.targetChannelId;
+    const channelId = to ? to : this.config.targetChannelId;
     this.client.sendMessage(channelId, message);
   }
 

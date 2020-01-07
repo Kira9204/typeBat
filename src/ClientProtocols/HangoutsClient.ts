@@ -6,9 +6,7 @@ import PluginsController from '../Plugins/PluginsController';
 //Types
 import { IClientMessage, MSG_TYPE, PROTOCOL } from '../Types/ClientMessage';
 import { IClientProtocol } from '../Types/ClientProtocolInterface';
-import {
-  ITypeHangoutsServiceConfig
-} from '../Types/TypeConfig';
+import { ITypeHangoutsServiceConfig } from '../Types/TypeConfig';
 
 const EVT_TEXT_MESSAGE = 'chat_message';
 const EVT_CONNECT_FAILED = 'connect_failed';
@@ -122,10 +120,7 @@ class HangoutsClient implements IClientProtocol {
   }
 
   public say(message: string, to?: string | null) {
-    if (!to && this.lastMsgChannelId.length === 0) {
-      return;
-    }
-    const channelId = to ? to: this.config.targetChannelId;
+    const channelId = to ? to : this.config.targetChannelId;
     this.client.sendchatmessage(channelId, [[0, message]]);
   }
 

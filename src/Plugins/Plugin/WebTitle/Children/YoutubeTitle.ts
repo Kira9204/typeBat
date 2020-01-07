@@ -1,11 +1,11 @@
 import moment from 'moment';
 import * as webService from '../../../../Services/WebService';
-import { API_KEY_YOUTUBE } from "./Constants";
 import { formatNumber } from './PriceFormatter';
+// @ts-ignore
+import { API_KEYS } from '../../../../../apikeys';
+const API_KEY_YOUTUBE = API_KEYS.YOUTUBE;
 
-import {
-  IClientService
-} from '../../../../Types/ClientMessage';
+import { IClientService } from '../../../../Types/ClientMessage';
 import { IPluginChildInterface } from '../../../../Types/PluginInterface';
 interface IVideoModel {
   title: string;
@@ -57,7 +57,9 @@ const constructVideoModel = (data: string): IVideoModel => {
       }
       duration = duration.toLowerCase();
     }
-    const publishedAt =  moment(item.snippet.publishedAt).format('ddd Do, MMM YYYY');
+    const publishedAt = moment(item.snippet.publishedAt).format(
+      'ddd Do, MMM YYYY'
+    );
 
     return {
       channel,
@@ -86,7 +88,7 @@ class YoutubeTitle implements IPluginChildInterface {
     clientService: IClientService,
     isSmallMessage: boolean
   ) {
-    return  webService.REGEXP.YOUTUBE.test(message);
+    return webService.REGEXP.YOUTUBE.test(message);
   }
 
   public static getVideoId(input: string) {

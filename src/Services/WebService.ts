@@ -18,6 +18,12 @@ export const REGEXP = {
   WEBHALLEN: /https:\/\/www\.webhallen\.com\/se\/product\/(\d+)/
 };
 
+const DEFAULT_HEADERS = {
+  'User-Agent': USERAGENT,
+  Accept: '*/*',
+  'Accept-Encoding': 'gzip'
+};
+
 /**
  * Replaces all line breaks and tabs, and decodes escaped utf-8 characters back to utf-8.
  * @param str
@@ -49,24 +55,18 @@ export const parseUrl = (url: string) => {
   }
 };
 
-
 /**
  * Returns a promise with a HTTP HEAD request. Useful if you need metadata about a provided resource,
  * such as if it's a textual document or a binary such as an image.
  * Automatically adds GZIP/cookies support
  * @param myUrl
- * @param userAgent
  */
-export const getHeaders = (myUrl: string, userAgent: string = USERAGENT) => {
+export const getHeaders = (myUrl: string) => {
   return rp({
     method: 'HEAD',
     resolveWithFullResponse: true,
     gzip: true,
-    headers: {
-      'User-Agent': userAgent,
-      Accept: '*/*',
-      'Accept-Encoding': 'gzip'
-    },
+    headers: DEFAULT_HEADERS,
     jar: rp.jar(),
     timeout: TIMEOUT,
     url: myUrl
@@ -76,18 +76,14 @@ export const getHeaders = (myUrl: string, userAgent: string = USERAGENT) => {
 /**
  * Returns a promise with a HTTP GET request. Automatically adds GZIP/cookies support
  * @param myUrl The URL to download the document from
- * @param [userAgent] If you need another user-agent for your request
+ * @param headers Custom headers to send in the request
  */
-export const downloadPage = (
-  myUrl: string,
-  userAgent: string = USERAGENT
-) => {
+export const downloadPage = (myUrl: string, headers = {}) => {
   return rp({
     gzip: true,
     headers: {
-      'User-Agent': userAgent,
-      Accept: '*/*',
-      'Accept-Encoding': 'gzip'
+      ...DEFAULT_HEADERS,
+      ...headers
     },
     jar: rp.jar(),
     timeout: TIMEOUT,
@@ -100,13 +96,12 @@ export const downloadPage = (
  * @param myUrl The URL to download the document from
  * @param [userAgent] If you need another user-agent for your request
  */
-export const downloadPageDom = (
-  myUrl: string,
-  userAgent: string = USERAGENT
-) => {
-  return downloadPage(myUrl, userAgent).then((html) => {
-    return new JSDOMLib.JSDOM(html);
-  }).catch(e => {});
+export const downloadPageDom = (myUrl: string, headers = {}) => {
+  return downloadPage(myUrl, headers)
+    .then((html) => {
+      return new JSDOMLib.JSDOM(html);
+    })
+    .catch((e) => {});
 };
 
 /**
@@ -114,22 +109,21 @@ export const downloadPageDom = (
  * @param myUrl
  * @param userAgent
  */
-export const downloadPageTitle = (
-  myUrl: string,
-  userAgent: string = USERAGENT
-) => {
-  return downloadPageDom(myUrl).then((dom) => {
-    if (!dom) {
-      return null;
-    }
-    const tdom = dom.window.document.querySelector('title');
-    if (!dom || !tdom) {
-      return null;
-    }
-    let title = tdom.innerHTML;
-    title = cleanDecodeString(title);
-    return title;
-  }).catch(e => {});
+export const downloadPageTitle = (myUrl: string, headers = {}) => {
+  return downloadPageDom(myUrl, headers)
+    .then((dom) => {
+      if (!dom) {
+        return null;
+      }
+      const tdom = dom.window.document.querySelector('title');
+      if (!dom || !tdom) {
+        return null;
+      }
+      let title = tdom.innerHTML;
+      title = cleanDecodeString(title);
+      return title;
+    })
+    .catch((e) => {});
 };
 
 /**
@@ -142,7 +136,7 @@ export const downloadPageTitle = (
 export const post = (myUrl: string, data: object, postAsFormData = false) => {
   const options: rp.Options = {
     method: 'POST',
-    url: myUrl,
+    url: myUrl
   };
   if (!postAsFormData) {
     options.body = data;

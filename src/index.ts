@@ -2,20 +2,12 @@ import DiscordClient from './ClientProtocols/DiscordClient';
 import HangoutsClient from './ClientProtocols/HangoutsClient';
 import IrcClient from './ClientProtocols/IrcClient';
 import PluginsController from './Plugins/PluginsController';
-import { CONFIG_FILE, VERSION } from './Constants';
+import { VERSION } from './Constants';
 import { ITypeConfig } from './Types/TypeConfig';
 import WebAPI from './WebAPI/WebAPI';
 import TelegramClient from './ClientProtocols/TelegramClient';
-const fs = require('fs');
-
-const loadConfiguration = () => {
-  const configFile = `${__dirname}/../${CONFIG_FILE}`;
-  if (!fs.existsSync(configFile)) {
-    return false;
-  }
-  const fileString = fs.readFileSync(configFile, 'utf8');
-  return JSON.parse(fileString);
-};
+// @ts-ignore
+import { CONFIG } from '../config';
 
 class MainService {
   private readonly loadedConfig: ITypeConfig;
@@ -41,8 +33,9 @@ class MainService {
     this.loadHangoutsServices = this.loadHangoutsServices.bind(this);
     this.getHangoutsServices = this.getHangoutsServices.bind(this);
 
-    console.log('Loading configuration...');
-    this.loadedConfig = loadConfiguration();
+    console.log('Configuration: ', CONFIG);
+    //this.loadedConfig = loadConfiguration();
+    this.loadedConfig = CONFIG;
     if (!this.loadedConfig) {
       console.log('No configuration found! Aborting...');
       process.exit(1);

@@ -1,9 +1,9 @@
-import { IClientMessage } from "../../Types/ClientMessage";
+import { IClientMessage } from '../../Types/ClientMessage';
 import * as YoutubeSearch from '../../Services/YoutubeSearchService';
-import * as webService from "../../Services/WebService";
-import DiscordClient from "../DiscordClient";
-import { ISuggestedVideo } from "../../Services/YoutubeSearchService";
-import ytdl from "ytdl-core";
+import * as webService from '../../Services/WebService';
+import DiscordClient from '../DiscordClient';
+import { ISuggestedVideo } from '../../Services/YoutubeSearchService';
+import ytdl from 'ytdl-core';
 
 export interface IPlaylistItem {
   title: string;
@@ -43,10 +43,12 @@ export class Jukebox {
 
       const addToPlaylist = (title: string, playUrl: string) => {
         if (this.playList.length < 0) {
-          this.playList = [{
-            title: title,
-            url: playUrl
-          }];
+          this.playList = [
+            {
+              title: title,
+              url: playUrl
+            }
+          ];
         } else {
           this.playList.push({
             title: title,
@@ -93,7 +95,7 @@ export class Jukebox {
         const onVideoSuggestions = (videoSuggestions: ISuggestedVideo[]) => {
           console.log('1', this.playList, this.currentSong);
           if (videoSuggestions.length === 0) {
-            service.say('I couldn\'t find any matching videos', msgObj.channel);
+            service.say("I couldn't find any matching videos", msgObj.channel);
             return;
           }
           const videoSuggestion = videoSuggestions[0];
@@ -104,7 +106,7 @@ export class Jukebox {
         this.isPaused = false;
       }
       return true;
-    } else if (firstWord === `${this.trigger}stop`) {
+    } else if (firstWord === `${this.trigger}s`) {
       service.stopSound();
       return true;
     } else if (firstWord === `${this.trigger}pause`) {
@@ -133,7 +135,7 @@ export class Jukebox {
       let newVolume = this.volume;
       const newVolStr = msgObj.message.split(' ')[1];
       try {
-        newVolume = (parseInt(newVolStr)/100);
+        newVolume = parseInt(newVolStr) / 100;
       } catch (e) {
         service.say('Volume is not a percentage!', msgObj.channel);
         return true;
@@ -144,8 +146,11 @@ export class Jukebox {
       }
       service.setVolume(newVolume);
       return true;
-    } else if (msgObj.message === this.trigger + 'vol') {
-      service.say('Current volume: ' + (this.volume*100), msgObj.channel);
+    } else if (
+      msgObj.message === this.trigger + 'vol' ||
+      msgObj.message === this.trigger + 'volume'
+    ) {
+      service.say('Current volume: ' + this.volume * 100, msgObj.channel);
       return true;
     }
     return false;

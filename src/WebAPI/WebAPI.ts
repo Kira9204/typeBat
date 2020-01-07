@@ -4,7 +4,7 @@ import MainService from '../index';
 import { PROTOCOL } from '../Types/ClientMessage';
 import { ITypeWebAPIConfig } from '../Types/TypeConfig';
 import HangoutsClient from '../ClientProtocols/HangoutsClient';
-import TelegramClient from "../ClientProtocols/TelegramClient";
+import TelegramClient from '../ClientProtocols/TelegramClient';
 
 const HANGOUTS_TARGET_CONFIG_NAME = 'SnekabelHangouts';
 const TELEGRAM_TARGET_CONFIG_NAME = 'SnekabelTelegram';
@@ -43,9 +43,7 @@ class WebAPI {
       (e) => e.getClient().config.name === HANGOUTS_TARGET_CONFIG_NAME
     );
     if (!hangoutService) {
-      console.log(
-        'WebAPI: Could not find target hangouts service'
-      );
+      console.log('WebAPI: Could not find target hangouts service');
       return;
     }
     return hangoutService;
@@ -57,9 +55,7 @@ class WebAPI {
       (e) => e.getClient().config.name === TELEGRAM_TARGET_CONFIG_NAME
     );
     if (!telegramService) {
-      console.log(
-        'WebAPI: Could not find target telegram service'
-      );
+      console.log('WebAPI: Could not find target telegram service');
       return;
     }
     return telegramService;
@@ -119,7 +115,7 @@ class WebAPI {
             return;
           }
           telegramService.say(message);
-        }  else if (protocol === PROTOCOL.IRC) {
+        } else if (protocol === PROTOCOL.IRC) {
           const ircServices = mainService.getIRCClientServices();
           const ircService = ircServices.find(
             (e) => e.getClient().config.name === targetConfig

@@ -4,7 +4,6 @@ import { IPluginChildInterface } from '../../../../Types/PluginInterface';
 
 class SpotifyTitle implements IPluginChildInterface {
   constructor() {
-
     this.supportsAction = this.supportsAction.bind(this);
     this.trigger = this.trigger.bind(this);
   }
@@ -26,20 +25,25 @@ class SpotifyTitle implements IPluginChildInterface {
       return;
     }
 
-    webService.downloadPageDom(message, 'curl/7.55.1').then((dom) => {
-      if (!dom) {
-        return;
-      }
-      const document = dom.window.document;
-      try {
-        const el = document.querySelector('script[type="application/ld+json"]');
-        if (!el) {
+    webService
+      .downloadPageDom(message, {"User-Agent": "curl/7.55.1"})
+      .then((dom) => {
+        if (!dom) {
           return;
         }
-        const jsonObj = JSON.parse(el.textContent);
-        clientService.say(jsonObj.description, channel);
-      } catch (e) {}
-    }).catch(e => {});
+        const document = dom.window.document;
+        try {
+          const el = document.querySelector(
+            'script[type="application/ld+json"]'
+          );
+          if (!el) {
+            return;
+          }
+          const jsonObj = JSON.parse(el.textContent);
+          clientService.say(jsonObj.description, channel);
+        } catch (e) {}
+      })
+      .catch((e) => {});
   }
 }
 

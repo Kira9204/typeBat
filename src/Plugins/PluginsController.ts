@@ -38,21 +38,21 @@ class PluginsController {
 
   public loadPlugins() {
     this.plugins = [
-      new (reRequire('./Plugin/HelpPlugin')).default(this),
-      new (reRequire('./Plugin/ReloadPlugin')).default(this),
-      new (reRequire('./Plugin/WebTitle/WebTitlePlugin')).default(this),
-      new (reRequire('./Plugin/HangoutsDiscordUsersInVoicePlugin')).default(
+      new (reRequire('./Plugin/HelpPlugin').default)(this),
+      new (reRequire('./Plugin/ReloadPlugin').default)(this),
+      new (reRequire('./Plugin/WebTitle/WebTitlePlugin').default)(this),
+      new (reRequire('./Plugin/HangoutsDiscordUsersInVoicePlugin').default)(
         this
       ),
-      new (reRequire('./Plugin/HangoutsDiscordVoiceParticipationPlugin')).default(
+      new (reRequire(
+        './Plugin/HangoutsDiscordVoiceParticipationPlugin'
+      ).default)(this),
+      new (reRequire('./Plugin/TelegramDiscordUsersInVoicePlugin').default)(
         this
       ),
-      new (reRequire('./Plugin/TelegramDiscordUsersInVoicePlugin')).default(
-        this
-      ),
-      new (reRequire('./Plugin/TelegramDiscordVoiceParticipationPlugin')).default(
-        this
-      )
+      new (reRequire(
+        './Plugin/TelegramDiscordVoiceParticipationPlugin'
+      ).default)(this)
     ];
   }
 
