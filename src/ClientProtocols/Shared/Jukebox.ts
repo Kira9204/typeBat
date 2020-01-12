@@ -61,7 +61,7 @@ export class Jukebox {
           service.playNext();
         }
 
-        service.say(`Added song to playlist: ${title}`, msgObj.channel);
+        //service.say(`Added song to playlist: ${title}`, msgObj.channel);
       };
 
       if (webService.parseUrl(splitted[1])) {
@@ -81,8 +81,6 @@ export class Jukebox {
               addToPlaylist(pageTitle, playUrl);
             }
           });
-        } else if (['bruh', 'oj', 'kaften', 'wow'].includes(playUrl)) {
-          addToPlaylist(playUrl, playUrl);
         } else {
           addToPlaylist(`Custom audio stream: ${playUrl}`, playUrl);
         }

@@ -153,6 +153,7 @@ class DiscordClient implements IClientProtocol {
         this.streamDispatcher = this.voiceConnection.playStream(stream, {
           volume: this.jukebox.volume
         });
+        appendStreamDispatcherEnd();
       } else if (webService.REGEXP.SOUNDCLOUD.test(playlistItem.url)) {
         //Just inspect the XHR requests in the browser for this
         const CLIENT_ID = 'YUKXoArFcqrlQn9tfNHvvyfnDISj04zk';
