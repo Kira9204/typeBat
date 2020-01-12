@@ -1,6 +1,7 @@
 import * as webService from './WebService';
 // @ts-ignore
 import { API_KEYS } from '../../apikeys';
+import { cleanDecodeString } from './WebService';
 const API_KEY_YOUTUBE = API_KEYS.YOUTUBE;
 
 export interface ISuggestedVideo {
@@ -23,7 +24,7 @@ export const findYoutubeVideos = (
     responseObj.items.forEach((e: any) => {
       if (e.id.kind === 'youtube#video') {
         suggestedVideos.push({
-          title: e.snippet.title,
+          title: cleanDecodeString(e.snippet.title),
           videoId: e.id.videoId
         });
       }

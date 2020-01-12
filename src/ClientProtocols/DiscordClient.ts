@@ -104,9 +104,11 @@ class DiscordClient implements IClientProtocol {
       isSmallMessage: true
     };
 
+    /*
     if (message.channel.type === 'dm') {
       return this.onPmMessage(msgObj);
     }
+     */
 
     if (!this.jukebox.onChannelMessage(msgObj)) {
       this.pluginsController.trigger(msgObj);
@@ -119,11 +121,20 @@ class DiscordClient implements IClientProtocol {
     const isInChannel = this.client.voiceConnections.array().length !== 0;
 
     const getAuthorVoiceChannel = () => {
-      const voiceChannelArray = this.lastMsg.guild.channels
-        .filter((v) => v.type === 'voice')
-          // @ts-ignore
-        .filter((v) => v.members.has(this.lastMsg.author.id))
-        .array();
+
+      const getVoiceChannel = () => {
+        try {
+          return this.lastMsg.guild.channels
+              .filter((v) => v.type === 'voice')
+              // @ts-ignore
+              .filter((v) => v.members.has(this.lastMsg.author.id))
+              .array();
+        } catch (e) {
+          return [this.client.channels.get(this.config.targetVoiceChannelId)];
+        }
+      };
+
+      const voiceChannelArray = getVoiceChannel();
       if (voiceChannelArray.length === 0) {
         return null;
       } else {
