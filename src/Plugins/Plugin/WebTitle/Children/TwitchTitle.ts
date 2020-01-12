@@ -1,4 +1,4 @@
-import * as webService from '../../../../Services/WebService';
+import * as webLib from '../../../../Libs/WebLib';
 import { IClientService } from '../../../../Types/ClientMessage';
 import { IPluginChildInterface } from '../../../../Types/PluginInterface';
 import { formatNumber } from './PriceFormatter';
@@ -19,11 +19,11 @@ class TwitchTitle implements IPluginChildInterface {
     channel: string,
     clientService: IClientService
   ) {
-    return webService.REGEXP.TWITCH.test(message);
+    return webLib.REGEXP.TWITCH.test(message);
   }
 
   public getUserName(input: string) {
-    const match = webService.REGEXP.TWITCH.exec(input);
+    const match = webLib.REGEXP.TWITCH.exec(input);
     if (match == null || match[1] === undefined) {
       return false;
     }
@@ -45,7 +45,7 @@ class TwitchTitle implements IPluginChildInterface {
     const userName = this.getUserName(message);
     const apiUrl = `https://api.twitch.tv/helix/streams?user_login=${userName}`;
 
-    webService
+    webLib
       .downloadPage(apiUrl, { 'Client-ID': API_KEY_TWITCH })
       .then((data: string) => {
         const parsedObj = JSON.parse(data);

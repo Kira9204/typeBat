@@ -5,7 +5,7 @@ import JSDOMLib from 'jsdom';
 
 const TIMEOUT = 10000;
 const USERAGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36';
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36';
 
 export const REGEXP = {
   YOUTUBE: /(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)((?:\/watch\?v=|\/)([^\s&]+))/,

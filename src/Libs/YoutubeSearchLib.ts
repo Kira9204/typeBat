@@ -1,7 +1,6 @@
-import * as webService from './WebService';
+import { downloadPage, cleanDecodeString } from './WebLib';
 // @ts-ignore
 import { API_KEYS } from '../../apikeys';
-import { cleanDecodeString } from './WebService';
 const API_KEY_YOUTUBE = API_KEYS.YOUTUBE;
 
 export interface ISuggestedVideo {
@@ -18,7 +17,7 @@ export const findYoutubeVideos = (
     ' ',
     '%20'
   )}&key=${API_KEY_YOUTUBE}`;
-  webService.downloadPage(apiUrl).then((data: string) => {
+  downloadPage(apiUrl).then((data: string) => {
     const responseObj = JSON.parse(data);
     const suggestedVideos: ISuggestedVideo[] = [];
     responseObj.items.forEach((e: any) => {

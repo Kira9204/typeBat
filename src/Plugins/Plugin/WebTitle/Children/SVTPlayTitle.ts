@@ -1,4 +1,4 @@
-import * as webService from '../../../../Services/WebService';
+import * as webLib from '../../../../Libs/WebLib';
 import { IClientService } from '../../../../Types/ClientMessage';
 import { IPluginChildInterface } from '../../../../Types/PluginInterface';
 
@@ -42,7 +42,7 @@ class SVTPlayTitle implements IPluginChildInterface {
     channel: string,
     clientService: IClientService
   ) {
-    return webService.REGEXP.SVT.test(message);
+    return webLib.REGEXP.SVT.test(message);
   }
 
   public trigger(
@@ -54,7 +54,7 @@ class SVTPlayTitle implements IPluginChildInterface {
       return;
     }
 
-    webService
+    webLib
       .downloadPageDom(message)
       .then((dom) => {
         if (!dom) {
@@ -75,7 +75,7 @@ class SVTPlayTitle implements IPluginChildInterface {
       .catch((e) => {})
       .then((data: string) => {
         const svtRequest = `http://www.svt.se/videoplayer-api/video/${data}`;
-        webService
+        webLib
           .downloadPage(svtRequest)
           .then((data2: string) => {
             const videoData = constructModel(data2);

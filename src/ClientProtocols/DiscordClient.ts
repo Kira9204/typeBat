@@ -2,7 +2,7 @@ import Discord from 'discord.js';
 import fs from 'fs';
 import ytdl from 'ytdl-core';
 import PluginsController from '../Plugins/PluginsController';
-import * as webService from '../Services/WebService';
+import * as webLib from '../Libs/WebLib';
 import Jukebox, { IPlaylistItem, MP3s } from './Shared/Jukebox';
 
 // Used by discord internally when streaming music
@@ -155,7 +155,7 @@ class DiscordClient implements IClientProtocol {
 
     const play = () => {
       console.log('PLAY THIS', playlistItem);
-      if (webService.REGEXP.YOUTUBE.test(playlistItem.url)) {
+      if (webLib.REGEXP.YOUTUBE.test(playlistItem.url)) {
         if (this.isLastMsgPM) {
           this.say('Now Playing: ' + playlistItem.title, this.lastPmMsgChannelId);
         } else {
@@ -172,13 +172,13 @@ class DiscordClient implements IClientProtocol {
           volume: this.jukebox.volume
         });
         appendStreamDispatcherEnd();
-      } else if (webService.REGEXP.SOUNDCLOUD.test(playlistItem.url)) {
+      } else if (webLib.REGEXP.SOUNDCLOUD.test(playlistItem.url)) {
         //Just inspect the XHR requests in the browser for this
         const CLIENT_ID = 'YUKXoArFcqrlQn9tfNHvvyfnDISj04zk';
-        webService.downloadPage(playlistItem.url).then((dataStr1) => {
+        webLib.downloadPage(playlistItem.url).then((dataStr1) => {
           let found = dataStr1.indexOf('/stream/hls');
           let hlsUrl = dataStr1.substring(found - 100, found + 11);
-          webService
+          webLib
             .downloadPage(hlsUrl + '?client_id=' + CLIENT_ID)
             .then((dataStr2) => {
               if (this.isLastMsgPM) {

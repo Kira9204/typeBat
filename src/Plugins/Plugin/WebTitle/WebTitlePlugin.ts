@@ -1,4 +1,4 @@
-import * as webService from '../../../Services/WebService';
+import * as webLib from '../../../Libs/WebLib';
 import { IClientMessage, PROTOCOL } from '../../../Types/ClientMessage';
 import {
   IPluginChildInterface,
@@ -52,10 +52,10 @@ class WebTitlePlugin implements IPluginInterface {
 
     const parts = messageObj.message.split(' ');
     for (const part of parts) {
-      if (webService.parseUrl(part)) {
+      if (webLib.parseUrl(part)) {
         let valid = false;
         // Notice: The web site might block HEAD requests
-        await webService
+        await webLib
           .getHeaders(part)
           .then((res) => {
             const ct = res.headers['content-type'];
@@ -77,7 +77,7 @@ class WebTitlePlugin implements IPluginInterface {
 
     const parts = messageObj.message.split(' ');
     for (const part of parts) {
-      if (!webService.parseUrl(part)) {
+      if (!webLib.parseUrl(part)) {
         continue;
       }
 
@@ -99,7 +99,7 @@ class WebTitlePlugin implements IPluginInterface {
           return;
         }
       }
-      webService.downloadPageTitle(part).then((data) => {
+      webLib.downloadPageTitle(part).then((data) => {
         if (!data) {
           return;
         }
@@ -112,7 +112,7 @@ class WebTitlePlugin implements IPluginInterface {
 
   private sendTitle(messageObj: IClientMessage, part: string, title: string) {
     if (part.length > 212 && messageObj.protocol === PROTOCOL.IRC) {
-      webService
+      webLib
         .post('https://s.d3ff.se', { link: part })
         .then((response) => {
           if (title.length > 0) {

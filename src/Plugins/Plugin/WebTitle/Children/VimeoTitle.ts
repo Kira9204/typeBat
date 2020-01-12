@@ -1,4 +1,4 @@
-import * as webService from '../../../../Services/WebService';
+import * as webLib from '../../../../Libs/WebLib';
 import { IClientService } from '../../../../Types/ClientMessage';
 import { IPluginChildInterface } from '../../../../Types/PluginInterface';
 import { formatNumber } from './PriceFormatter';
@@ -66,11 +66,11 @@ class VimeoTitle implements IPluginChildInterface {
     channel: string,
     clientService: IClientService
   ) {
-    return webService.REGEXP.VIMEO.test(message);
+    return webLib.REGEXP.VIMEO.test(message);
   }
 
   public getVideoId(input: string) {
-    const match = webService.REGEXP.VIMEO.exec(input);
+    const match = webLib.REGEXP.VIMEO.exec(input);
     if (match == null || match[1] === undefined) {
       return false;
     }
@@ -91,7 +91,7 @@ class VimeoTitle implements IPluginChildInterface {
 
     const videoId = this.getVideoId(message);
     const apiUrl = `https://vimeo.com/api/v2/video/${videoId}.json`;
-    webService
+    webLib
       .downloadPage(apiUrl)
       .then((data: string) => {
         const videoInfo: boolean | iVideoModel = constructModel(data);

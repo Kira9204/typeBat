@@ -1,8 +1,8 @@
 import { IClientMessage } from '../../Types/ClientMessage';
-import * as YoutubeSearch from '../../Services/YoutubeSearchService';
-import * as webService from '../../Services/WebService';
+import * as YoutubeSearch from '../../Libs/YoutubeSearchLib';
+import * as webLib from '../../Libs/WebLib';
 import DiscordClient from '../DiscordClient';
-import { ISuggestedVideo } from '../../Services/YoutubeSearchService';
+import { ISuggestedVideo } from '../../Libs/YoutubeSearchLib';
 import ytdl from 'ytdl-core';
 
 export interface IPlaylistItem {
@@ -64,9 +64,9 @@ export class Jukebox {
         //service.say(`Added song to playlist: ${title}`, msgObj.channel);
       };
 
-      if (webService.parseUrl(splitted[1])) {
+      if (webLib.parseUrl(splitted[1])) {
         const playUrl = splitted[1];
-        if (webService.REGEXP.YOUTUBE.test(playUrl)) {
+        if (webLib.REGEXP.YOUTUBE.test(playUrl)) {
           ytdl
             .getBasicInfo(playUrl)
             .then((videoInfo: ytdl.videoInfo) => {
@@ -75,8 +75,8 @@ export class Jukebox {
             .catch((err) => {
               console.log('Failed to get video info:', err);
             });
-        } else if (webService.REGEXP.SOUNDCLOUD.test(playUrl)) {
-          webService.downloadPageTitle(playUrl).then((pageTitle) => {
+        } else if (webLib.REGEXP.SOUNDCLOUD.test(playUrl)) {
+          webLib.downloadPageTitle(playUrl).then((pageTitle) => {
             if (pageTitle) {
               addToPlaylist(pageTitle, playUrl);
             }

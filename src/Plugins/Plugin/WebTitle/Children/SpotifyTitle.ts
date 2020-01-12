@@ -1,4 +1,4 @@
-import * as webService from '../../../../Services/WebService';
+import * as webLib from '../../../../Libs/WebLib';
 import { IClientService } from '../../../../Types/ClientMessage';
 import { IPluginChildInterface } from '../../../../Types/PluginInterface';
 
@@ -13,7 +13,7 @@ class SpotifyTitle implements IPluginChildInterface {
     channel: string,
     clientService: IClientService
   ) {
-    return webService.REGEXP.SPOTIFY.test(message);
+    return webLib.REGEXP.SPOTIFY.test(message);
   }
 
   public trigger(
@@ -25,7 +25,7 @@ class SpotifyTitle implements IPluginChildInterface {
       return;
     }
 
-    webService
+    webLib
       .downloadPageDom(message, {"User-Agent": "curl/7.55.1"})
       .then((dom) => {
         if (!dom) {

@@ -1,4 +1,4 @@
-import * as webService from '../../../../Services/WebService';
+import * as webLib from '../../../../Libs/WebLib';
 import { IClientService } from '../../../../Types/ClientMessage';
 import { IPluginChildInterface } from '../../../../Types/PluginInterface';
 
@@ -71,11 +71,11 @@ class SteamTitle implements IPluginChildInterface {
     channel: string,
     clientService: IClientService
   ) {
-    return webService.REGEXP.STEAM.test(message);
+    return webLib.REGEXP.STEAM.test(message);
   }
 
   public getAppId(input: string) {
-    const match = webService.REGEXP.STEAM.exec(input);
+    const match = webLib.REGEXP.STEAM.exec(input);
     if (match == null || match[1] === undefined) {
       return false;
     }
@@ -99,7 +99,7 @@ class SteamTitle implements IPluginChildInterface {
       return;
     }
     const apiUrl = `https://store.steampowered.com/api/appdetails?appids=${gameId}&cc=SV`;
-    webService
+    webLib
       .downloadPage(apiUrl)
       .then(
         function(data: string) {

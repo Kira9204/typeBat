@@ -1,4 +1,4 @@
-import * as webService from '../../../../Services/WebService';
+import * as webLib from '../../../../Libs/WebLib';
 import { IClientService } from '../../../../Types/ClientMessage';
 import { IPluginChildInterface } from '../../../../Types/PluginInterface';
 import { formatNumber } from './PriceFormatter';
@@ -38,7 +38,7 @@ class PriceTitle implements IPluginChildInterface {
     clientService: IClientService,
     isSmallMessage: boolean
   ) {
-    const parsedUrl = webService.parseUrl(message);
+    const parsedUrl = webLib.parseUrl(message);
     const hostname = parsedUrl.hostname;
 
     for (const key in SUPPORTED_DOMAINS) {
@@ -68,10 +68,10 @@ class PriceTitle implements IPluginChildInterface {
     clientService: IClientService,
     isSmallMessage: boolean
   ) {
-    const parsedUrl = webService.parseUrl(message);
+    const parsedUrl = webLib.parseUrl(message);
     const hostname = parsedUrl.hostname;
 
-    webService
+    webLib
       .downloadPageDom(message)
       .then((dom) => {
         if (!dom) {
@@ -81,7 +81,7 @@ class PriceTitle implements IPluginChildInterface {
         let title = '';
         if (!isSmallMessage) {
           title = document.querySelector('title').text;
-          title = webService.cleanDecodeString(title);
+          title = webLib.cleanDecodeString(title);
           title = 'Title: ' + title + '. ';
         }
 
@@ -109,19 +109,19 @@ class PriceTitle implements IPluginChildInterface {
               if (foundBiddingPriceEl || foundBiddingInitialPriceEl) {
                 const el = foundBiddingPriceEl || foundBiddingInitialPriceEl;
                 let text = el.textContent;
-                text = webService.cleanDecodeString(text);
+                text = webLib.cleanDecodeString(text);
                 titleText += 'Leading bid: ' + text + ' kr';
               }
               if (foundFixedPriceEl) {
                 let text = foundFixedPriceEl.textContent;
-                text = webService.cleanDecodeString(text);
+                text = webLib.cleanDecodeString(text);
                 text = text.substring(text.indexOf(':') + 2);
                 titleText += '. Buy now: ' + text;
               }
               if (foundTimeLeftEl || foundTimeLeftInitialEl) {
                 const el = foundTimeLeftEl || foundTimeLeftInitialEl;
                 let text = el.textContent;
-                text = webService.cleanDecodeString(text);
+                text = webLib.cleanDecodeString(text);
                 text = text.replace('dag', 'day');
                 text = text.replace('dagar', 'days');
                 text = text.replace('tim', 'hours');
@@ -148,19 +148,19 @@ class PriceTitle implements IPluginChildInterface {
               let titleText = title;
               if (priceEl) {
                 let text = priceEl.textContent;
-                text = webService.cleanDecodeString(text);
+                text = webLib.cleanDecodeString(text);
                 titleText += 'Price: ' + text;
               }
               if (publishedEL) {
                 let text = publishedEL.textContent;
-                text = webService
+                text = webLib
                   .cleanDecodeString(text)
                   .substring('Inlagd: '.length);
                 titleText += '. Published: ' + text;
               }
               if (areaEl) {
                 let text = areaEl.textContent;
-                text = webService.cleanDecodeString(text);
+                text = webLib.cleanDecodeString(text);
                 text = text.replace('(', '');
                 text = text.replace(')', '');
                 text = text.substring(0, text.lastIndexOf(' '));
@@ -174,12 +174,12 @@ class PriceTitle implements IPluginChildInterface {
           case SUPPORTED_DOMAINS.www_webhallen_com:
             (() => {
               let titleText = '';
-              if (!webService.REGEXP.WEBHALLEN.test(message)) {
+              if (!webLib.REGEXP.WEBHALLEN.test(message)) {
                 clientService.say(titleText, channel);
                 return;
               }
 
-              const match = webService.REGEXP.WEBHALLEN.exec(message);
+              const match = webLib.REGEXP.WEBHALLEN.exec(message);
               const productId = match[1];
               if (productId === undefined) {
                 clientService.say(titleText, channel);
@@ -187,7 +187,7 @@ class PriceTitle implements IPluginChildInterface {
               }
 
               const url = `https://www.webhallen.com/api/product/${productId}`;
-              webService
+              webLib
                 .downloadPage(url)
                 .then((data: string) => {
                   const obj = JSON.parse(data);
@@ -283,7 +283,7 @@ class PriceTitle implements IPluginChildInterface {
               );
               if (priceEl) {
                 let text = priceEl.textContent;
-                text = webService.cleanDecodeString(text);
+                text = webLib.cleanDecodeString(text);
                 text = text.trim();
                 titleText += 'Price: ' + text + ' kr';
                 clientService.say(titleText, channel);
@@ -377,7 +377,7 @@ class PriceTitle implements IPluginChildInterface {
               const priceEl = document.querySelector('.c-price__text');
               if (priceEl) {
                 let text = priceEl.textContent;
-                text = webService.cleanDecodeString(text);
+                text = webLib.cleanDecodeString(text);
                 text = text.substring(0, text.lastIndexOf(','));
                 titleText += 'Price: ' + text + ' kr';
                 clientService.say(titleText, channel);

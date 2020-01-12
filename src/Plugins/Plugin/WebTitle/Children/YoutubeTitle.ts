@@ -1,5 +1,5 @@
 import moment from 'moment';
-import * as webService from '../../../../Services/WebService';
+import * as webLib from '../../../../Libs/WebLib';
 import { formatNumber } from './PriceFormatter';
 // @ts-ignore
 import { API_KEYS } from '../../../../../apikeys';
@@ -88,11 +88,11 @@ class YoutubeTitle implements IPluginChildInterface {
     clientService: IClientService,
     isSmallMessage: boolean
   ) {
-    return webService.REGEXP.YOUTUBE.test(message);
+    return webLib.REGEXP.YOUTUBE.test(message);
   }
 
   public static getVideoId(input: string) {
-    const match = webService.REGEXP.YOUTUBE.exec(input);
+    const match = webLib.REGEXP.YOUTUBE.exec(input);
     if (match == null || match[2] === undefined) {
       return false;
     }
@@ -102,7 +102,7 @@ class YoutubeTitle implements IPluginChildInterface {
   public getVideoInfo(url: string, callback: (videoInfo: IVideoModel) => void) {
     const videoId = YoutubeTitle.getVideoId(url);
     const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${API_KEY_YOUTUBE}&fields=items(snippet,statistics,contentDetails)&part=snippet,statistics,contentDetails`;
-    webService.downloadPage(apiUrl).then((data: string) => {
+    webLib.downloadPage(apiUrl).then((data: string) => {
       const videoInfo = constructVideoModel(data);
       if (videoInfo) {
         callback(videoInfo);
