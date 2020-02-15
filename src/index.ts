@@ -22,6 +22,7 @@ class MainService {
     console.log('By: Erik Welander');
     console.log('Version: ' + VERSION);
     console.log('');
+
     this.loadIRCClientServices = this.loadIRCClientServices.bind(this);
     this.getIRCClientServices = this.getIRCClientServices.bind(this);
     this.loadDiscordClientServices = this.loadDiscordClientServices.bind(this);
@@ -34,7 +35,6 @@ class MainService {
     this.getHangoutsServices = this.getHangoutsServices.bind(this);
 
     console.log('Configuration: ', CONFIG);
-    //this.loadedConfig = loadConfiguration();
     this.loadedConfig = CONFIG;
     if (!this.loadedConfig) {
       console.log('No configuration found! Aborting...');

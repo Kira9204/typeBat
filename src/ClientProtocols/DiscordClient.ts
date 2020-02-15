@@ -31,10 +31,8 @@ class DiscordClient implements IClientProtocol {
   private jukebox: Jukebox;
   private pluginsController: PluginsController;
   private readonly trigger: string;
-  private lastChannelMsg: Discord.Message;
-  private lastChannelMsgChannelId: string;
-  private lastPmMsgChannelId: string;
-  private isLastMsgPM: boolean;
+  private lastMsg: Discord.Message;
+  private lastMsgChannelId: string;
 
   constructor(
     clientConfig: ITypeDiscordServiceConfig,
@@ -52,9 +50,7 @@ class DiscordClient implements IClientProtocol {
     this.client = new Discord.Client();
     this.streamDispatcher = null;
     this.voiceConnection = null;
-    this.lastChannelMsgChannelId = '';
-    this.lastPmMsgChannelId = '';
-    this.isLastMsgPM = false;
+    this.lastMsgChannelId = '';
 
     this.trigger = clientConfig.trigger;
 
@@ -62,6 +58,7 @@ class DiscordClient implements IClientProtocol {
 
     this.connect = this.connect.bind(this);
     this.onChannelMessage = this.onChannelMessage.bind(this);
+    this.onPmMessage = this.onPmMessage.bind(this);
     this.playSound = this.playSound.bind(this);
     this.stopSound = this.stopSound.bind(this);
     this.pause = this.pause.bind(this);
@@ -95,15 +92,8 @@ class DiscordClient implements IClientProtocol {
     ) {
       return;
     }
-
-    if (message.channel.type === 'dm') {
-      this.lastPmMsgChannelId = message.channel.id;
-      this.isLastMsgPM = true;
-    } else {
-      this.lastChannelMsg = message;
-      this.lastChannelMsgChannelId = message.channel.id;
-      this.isLastMsgPM = false;
-    }
+    this.lastMsg = message;
+    this.lastMsgChannelId = message.channel.id;
 
     const msgObj: IClientMessage = {
       channel: message.channel.id,
@@ -114,29 +104,26 @@ class DiscordClient implements IClientProtocol {
       isSmallMessage: true
     };
 
+    if (message.channel.type === 'dm') {
+      return this.onPmMessage(msgObj);
+    }
+
     if (!this.jukebox.onChannelMessage(msgObj)) {
       this.pluginsController.trigger(msgObj);
     }
   }
 
+  public onPmMessage(message: IClientMessage) {}
+
   public playSound(playlistItem: IPlaylistItem, onEnd: () => void) {
     const isInChannel = this.client.voiceConnections.array().length !== 0;
 
     const getAuthorVoiceChannel = () => {
-
-      const getVoiceChannel = () => {
-        try {
-          return this.lastChannelMsg.guild.channels
-              .filter((v) => v.type === 'voice')
-              // @ts-ignore
-              .filter((v) => v.members.has(this.lastChannelMsg.author.id))
-              .array();
-        } catch (e) {
-          return [this.client.channels.get(this.config.targetVoiceChannelId)];
-        }
-      };
-
-      const voiceChannelArray = getVoiceChannel();
+      const voiceChannelArray = this.lastMsg.guild.channels
+        .filter((v) => v.type === 'voice')
+        // @ts-ignore
+        .filter((v) => v.members.has(this.lastMsg.author.id))
+        .array();
       if (voiceChannelArray.length === 0) {
         return null;
       } else {
@@ -156,12 +143,7 @@ class DiscordClient implements IClientProtocol {
     const play = () => {
       console.log('PLAY THIS', playlistItem);
       if (webLib.REGEXP.YOUTUBE.test(playlistItem.url)) {
-        if (this.isLastMsgPM) {
-          this.say('Now Playing: ' + playlistItem.title, this.lastPmMsgChannelId);
-        } else {
-          this.say('Now Playing: ' + playlistItem.title, this.lastChannelMsgChannelId);
-        }
-
+        this.say('Now Playing: ' + playlistItem.title, this.lastMsgChannelId);
         // @ts-ignore
         const stream = ytdl(playlistItem.url, { filter: 'audioonly' });
         if (this.streamDispatcher) {
@@ -181,11 +163,10 @@ class DiscordClient implements IClientProtocol {
           webLib
             .downloadPage(hlsUrl + '?client_id=' + CLIENT_ID)
             .then((dataStr2) => {
-              if (this.isLastMsgPM) {
-                this.say('Now Playing: ' + playlistItem.title, this.lastPmMsgChannelId);
-              } else {
-                this.say('Now Playing: ' + playlistItem.title, this.lastChannelMsgChannelId);
-              }
+              this.say(
+                'Now Playing: ' + playlistItem.title,
+                this.lastMsgChannelId
+              );
               const obj = JSON.parse(dataStr2);
               const streamUrl = obj.url;
               if (this.streamDispatcher) {
@@ -216,7 +197,7 @@ class DiscordClient implements IClientProtocol {
 
       //Play a music stream
       else {
-        this.say('Now Playing: ' + playlistItem.title, this.lastChannelMsgChannelId);
+        this.say('Now Playing: ' + playlistItem.title, this.lastMsgChannelId);
         if (this.streamDispatcher) {
           this.streamDispatcher.end();
         }
@@ -232,7 +213,7 @@ class DiscordClient implements IClientProtocol {
     if (!isInChannel) {
       const authorVoiceChannel = getAuthorVoiceChannel();
       if (!authorVoiceChannel) {
-        this.say('User is not in voice channel', this.lastChannelMsgChannelId);
+        this.say('User is not in voice channel', this.lastMsgChannelId);
         if (this.streamDispatcher) {
           this.jukebox.playList.pop();
         } else {
@@ -346,7 +327,7 @@ class DiscordClient implements IClientProtocol {
   }
 
   public say(message: string, to?: string | null) {
-    if (!to && this.lastChannelMsgChannelId.length === 0) {
+    if (!to && this.lastMsgChannelId.length === 0) {
       return;
     }
     const channelId = to ? to : this.config.targetChannelId;

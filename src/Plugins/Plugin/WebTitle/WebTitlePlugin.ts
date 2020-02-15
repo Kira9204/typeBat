@@ -12,6 +12,7 @@ import SVTPlayTitle from './Children/SVTPlayTitle';
 import TwitchTitle from './Children/TwitchTitle';
 import VimeoTitle from './Children/VimeoTitle';
 import YoutubeTitle from './Children/YoutubeTitle';
+import TwitterTitle from './Children/TwitterTitle';
 
 const PLUGIN_NAME = 'PLUGIN_WEB_TITLE';
 class WebTitlePlugin implements IPluginInterface {
@@ -35,6 +36,7 @@ class WebTitlePlugin implements IPluginInterface {
       new SteamTitle(),
       new SVTPlayTitle(),
       new TwitchTitle(),
+      new TwitterTitle(),
       new VimeoTitle()
     ];
   }
@@ -111,6 +113,7 @@ class WebTitlePlugin implements IPluginInterface {
   }
 
   private sendTitle(messageObj: IClientMessage, part: string, title: string) {
+    /*
     if (part.length > 212 && messageObj.protocol === PROTOCOL.IRC) {
       webLib
         .post('https://s.d3ff.se', { link: part })
@@ -133,6 +136,8 @@ class WebTitlePlugin implements IPluginInterface {
     } else if (title.length > 0) {
       messageObj.clientService.say(`Title: ${title}`, messageObj.channel);
     }
+     */
+    messageObj.clientService.say(`Title: ${title}`, messageObj.channel);
   }
 }
 

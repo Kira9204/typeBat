@@ -11,6 +11,7 @@ export const REGEXP = {
   YOUTUBE: /(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)((?:\/watch\?v=|\/)([^\s&]+))/,
   SOUNDCLOUD: /^https?:\/\/soundcloud\.com\/\S+\/\S+$/i,
   TWITCH: /https:\/\/www\.twitch\.tv\/(\w+)/,
+  TWITTER: /https:\/\/twitter.com\/(\w+)\/status\/(\d+)/,
   VIMEO: /https:\/\/vimeo\.com\/(\d+)/,
   SPOTIFY: /https:\/\/open\.spotify\.com/,
   STEAM: /https:\/\/store\.steampowered\.com\/app\/(\d+)/,

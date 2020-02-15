@@ -26,7 +26,7 @@ class SpotifyTitle implements IPluginChildInterface {
     }
 
     webLib
-      .downloadPageDom(message, {"User-Agent": "curl/7.55.1"})
+      .downloadPageDom(message, { 'User-Agent': 'curl/7.55.1' })
       .then((dom) => {
         if (!dom) {
           return;

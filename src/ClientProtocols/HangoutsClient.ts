@@ -121,7 +121,7 @@ class HangoutsClient implements IClientProtocol {
 
   public say(message: string, to?: string | null) {
     const channelId = to ? to : this.config.targetChannelId;
-    this.client.sendchatmessage(channelId, [[0, message]]);
+    this.client.sendchatmessage(channelId, [['TEXT', message]]);
   }
 
   public getClient() {

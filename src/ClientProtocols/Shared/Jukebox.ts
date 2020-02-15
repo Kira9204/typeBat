@@ -60,8 +60,6 @@ export class Jukebox {
           this.currentSong = -1;
           service.playNext();
         }
-
-        //service.say(`Added song to playlist: ${title}`, msgObj.channel);
       };
 
       if (webLib.parseUrl(splitted[1])) {
@@ -82,6 +80,9 @@ export class Jukebox {
             }
           });
         } else {
+          if (webLib.REGEXP.SPOTIFY.test(playUrl)) {
+            return;
+          }
           addToPlaylist(`Custom audio stream: ${playUrl}`, playUrl);
         }
       } else {
