@@ -11,6 +11,7 @@ const SUPPORTED_DOMAINS: { [key: string]: string } = {
   cdon_se: 'cdon.se',
   www_tradera_com: 'www.tradera.com',
   www_clasohlson_com: 'www.clasohlson.com',
+  www_kjell_com: 'www.kjell.com',
   www_biltema_se: 'www.biltema.se',
   www_komplett_se: 'www.komplett.se',
   www_ikea_com: 'www.ikea.com',
@@ -110,7 +111,7 @@ class PriceTitle implements IPluginChildInterface {
                 const el = foundBiddingPriceEl || foundBiddingInitialPriceEl;
                 let text = el.textContent;
                 text = webLib.cleanDecodeString(text);
-                titleText += 'Leading bid: ' + text + ' kr';
+                titleText += '. Leading bid: ' + text + ' kr';
               }
               if (foundFixedPriceEl) {
                 let text = foundFixedPriceEl.textContent;
@@ -278,14 +279,54 @@ class PriceTitle implements IPluginChildInterface {
           case SUPPORTED_DOMAINS.www_clasohlson_com:
             (() => {
               let titleText = title;
-              const priceEl = document.querySelector(
-                'body > main > div.main__inner-wrapper > div.yCmsContentSlot.product-detail-section > div > section.product__details.clearfix > div > div.col-lg-4.col-sm-12.col-md-6.product__price-section > div.product__price > div.product__normal-price > span.product__price-value'
-              );
+
+              const oldPriceEl = document.querySelector('.product__old-price');
+              if (oldPriceEl) {
+                let oldPriceText = oldPriceEl.textContent;
+                oldPriceText = oldPriceText.replace(/\s/g, '');
+                oldPriceText = oldPriceText.substring(0, oldPriceText.indexOf(','));
+                const priceRegular = parseInt(oldPriceText);
+
+                const currentPriceEl = document.querySelector('.product__discount-price');
+                if (!currentPriceEl) {
+                  return;
+                }
+
+                let currentPriceText = currentPriceEl.textContent;
+                currentPriceText = currentPriceText.replace(/\s/g, '');
+                currentPriceText = currentPriceText.substring(0, currentPriceText.indexOf(','));
+                const priceActive = parseInt(currentPriceText);
+
+                let percent = 1 - priceActive / priceRegular;
+                percent = percent * 100;
+                percent = Math.floor(percent);
+                titleText += 'Price: ' + currentPriceText + ' kr (' + percent + '% off!)';
+                clientService.say(titleText, channel);
+                return;
+              }
+              const priceEl = document.querySelector('.product__price-value');
               if (priceEl) {
-                let text = priceEl.textContent;
-                text = webLib.cleanDecodeString(text);
-                text = text.trim();
-                titleText += 'Price: ' + text + ' kr';
+                let currentPriceText = priceEl.textContent;
+                currentPriceText = currentPriceText.replace(/\s/g, '');
+                currentPriceText = currentPriceText.substring(0, currentPriceText.indexOf(','));
+
+                titleText += 'Price: ' + currentPriceText+' kr';
+                clientService.say(titleText, channel);
+                return;
+              }
+              clientService.say(titleText, channel);
+            })();
+            break;
+
+          case SUPPORTED_DOMAINS.www_kjell_com:
+            (() => {
+              let titleText = title;
+
+              const metaTag = document.querySelector("meta[property='product:price:amount']");
+              if (metaTag) {
+                const priceMetaContent = metaTag.getAttribute("content");
+                const priceFormatted = formatNumber(priceMetaContent);
+                titleText += 'Price: ' + priceFormatted+' kr';
                 clientService.say(titleText, channel);
                 return;
               }
