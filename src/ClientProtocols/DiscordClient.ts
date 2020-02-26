@@ -136,8 +136,12 @@ class DiscordClient implements IClientProtocol {
       // Catch the end event.
       this.streamDispatcher.on('end', () => {
         this.streamDispatcher.end();
-        onEnd();
+        if(!this.jukebox.skipNext) {
+          onEnd();
+        }
       });
+
+      this.jukebox.skipNext = false;
     };
 
     const play = () => {
@@ -229,6 +233,7 @@ class DiscordClient implements IClientProtocol {
         play();
       });
     } else {
+      this.jukebox.skipNext = true;
       play();
     }
   }
@@ -276,13 +281,14 @@ class DiscordClient implements IClientProtocol {
 
   public playNext() {
     this.jukebox.currentSong++;
-
+    console.log('playNext!', this.jukebox.currentSong, this.jukebox.playList.length > this.jukebox.currentSong)
     if (this.jukebox.playList.length > this.jukebox.currentSong) {
       this.playSound(
         this.jukebox.playList[this.jukebox.currentSong],
         this.playNext
       );
     } else {
+      console.log('Stopsound!');
       this.stopSound();
     }
   }

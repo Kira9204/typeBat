@@ -19,6 +19,10 @@ export class Jukebox {
   public currentSong: number;
   public REGEXP_VOLUME: RegExp;
   public isPaused: boolean;
+  // Avoid skipping 2 songs ahead by using this bool.
+  // Useful if you have an onEnd event that will get triggered
+  // Once the song stops.
+  public skipNext: boolean;
 
   constructor(protocolService: DiscordClient) {
     this.client = protocolService;
@@ -28,6 +32,7 @@ export class Jukebox {
     this.currentSong = -1;
     this.REGEXP_VOLUME = new RegExp(`${this.trigger}vol \\d+`);
     this.isPaused = false;
+    this.skipNext = false;
   }
 
   onChannelMessage(msgObj: IClientMessage) {
@@ -60,6 +65,8 @@ export class Jukebox {
           this.currentSong = -1;
           service.playNext();
         }
+
+        service.say(`Added song to playlist: ${title}`, msgObj.channel);
       };
 
       if (webLib.parseUrl(splitted[1])) {
@@ -92,7 +99,6 @@ export class Jukebox {
           return true;
         }
         const onVideoSuggestions = (videoSuggestions: ISuggestedVideo[]) => {
-          console.log('1', this.playList, this.currentSong);
           if (videoSuggestions.length === 0) {
             service.say("I couldn't find any matching videos", msgObj.channel);
             return;
