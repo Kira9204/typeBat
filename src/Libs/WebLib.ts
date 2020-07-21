@@ -1,7 +1,7 @@
 import rp from 'request-promise-native';
-import htmlEntities from 'html-entities';
 import URLLib from 'url';
 import JSDOMLib from 'jsdom';
+import { Html5Entities } from 'html-entities';
 
 const TIMEOUT = 10000;
 const USERAGENT =
@@ -36,10 +36,7 @@ export const cleanDecodeString = (str: string) => {
   str = str.trim();
   str = str.replace(/\r?\n|\r|\t/g, '');
 
-  const entities = new htmlEntities.AllHtmlEntities();
-  str = entities.decode(str);
-
-  return str;
+  return Html5Entities.decode(str)
 };
 
 /**
@@ -139,11 +136,14 @@ export const post = (myUrl: string, data: object, postAsFormData = false) => {
     method: 'POST',
     url: myUrl
   };
-  if (!postAsFormData) {
-    options.body = data;
-    options.json = true;
-  } else {
-    options.form = data;
+
+  if (Object.keys(data).length !== 0) {
+    if (!postAsFormData) {
+      options.body = data;
+      options.json = true;
+    } else {
+      options.form = data;
+    }
   }
 
   return rp(options);

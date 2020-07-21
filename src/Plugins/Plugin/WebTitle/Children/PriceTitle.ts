@@ -137,13 +137,13 @@ class PriceTitle implements IPluginChildInterface {
           case SUPPORTED_DOMAINS.www_blocket_se:
             (() => {
               const priceEl = document.querySelector(
-                '#skip-tabbar > div.MediumLayout__CenterWithPadding-y8zw9h-4.dLRLhZ > div.MediumLayout__BodyWrapper-y8zw9h-0.hcOKjg > div.MediumLayout__BodyLeft-y8zw9h-2.ggElfM > article > div:nth-child(1) > div.Hero__ContentWrapper-sc-1mjgwl-3.cJVGaa > div.TextHeadline1__TextHeadline1Wrapper-sc-18mtyla-0.beSmCZ.Price__StyledPrice-crp2x0-0.cfhypK'
+                'div.TextHeadline1__TextHeadline1Wrapper-sc-18mtyla-0'
               );
               const publishedEL = document.querySelector(
-                '#skip-tabbar > div.MediumLayout__CenterWithPadding-y8zw9h-4.dLRLhZ > div.MediumLayout__BodyWrapper-y8zw9h-0.hcOKjg > div.MediumLayout__BodyLeft-y8zw9h-2.ggElfM > article > div:nth-child(1) > div.Hero__ContentWrapper-sc-1mjgwl-3.cJVGaa > div.Hero__AdInfo-sc-1mjgwl-0.dzAsG > div:nth-child(1) > div > span'
+                '.PublishedTime__StyledTime-pjprkp-1'
               );
               const areaEl = document.querySelector(
-                '#skip-tabbar > div.MediumLayout__CenterWithPadding-y8zw9h-4.dLRLhZ > div.MediumLayout__BodyWrapper-y8zw9h-0.hcOKjg > div.MediumLayout__BodyLeft-y8zw9h-2.ggElfM > article > div:nth-child(1) > div.Hero__ContentWrapper-sc-1mjgwl-3.cJVGaa > div.Hero__AdInfo-sc-1mjgwl-0.dzAsG > div:nth-child(2) > div > span > a'
+                '.LocationInfo__StyledMapLink-sc-1op511s-3'
               );
 
               let titleText = title;

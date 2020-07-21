@@ -5,7 +5,6 @@ import { formatNumber } from './PriceFormatter';
 
 // @ts-ignore
 import { API_KEYS } from '../../../../../apikeys';
-const API_KEY_TWITCH = API_KEYS.TWITCH;
 
 class TwitchTitle implements IPluginChildInterface {
   constructor() {
@@ -43,27 +42,44 @@ class TwitchTitle implements IPluginChildInterface {
     }
 
     const userName = this.getUserName(message);
-    const apiUrl = `https://api.twitch.tv/helix/streams?user_login=${userName}`;
 
     webLib
-      .downloadPage(apiUrl, { 'Client-ID': API_KEY_TWITCH })
+      .post(
+        `https://id.twitch.tv/oauth2/token?client_id=${API_KEYS.TWITCH_CLIENT_ID}&client_secret=${API_KEYS.TWITCH_CLIENT_SECRET}&grant_type=client_credentials`,
+        {}
+      )
       .then((data: string) => {
-        const parsedObj = JSON.parse(data);
-        if (parsedObj.data.length === 0) {
-          clientService.say(
-            'No twitch stream data from API (User offline)',
-            channel
-          );
-          return;
-        }
+        const authData = JSON.parse(data);
+        const accessToken = authData['access_token'];
+        webLib
+          .downloadPage(
+            `https://api.twitch.tv/helix/streams?user_login=${userName}`,
+            {
+              'Client-ID': API_KEYS.TWITCH_CLIENT_ID,
+              Authorization: `Bearer ${accessToken}`
+            }
+          )
+          .then((data: string) => {
+            const parsedObj = JSON.parse(data);
+            if (parsedObj.data.length === 0) {
+              clientService.say(
+                'No twitch stream data from API (User offline)',
+                channel
+              );
+              return;
+            }
 
-        const streamObj = parsedObj.data[0];
-        const userName = streamObj.user_name;
-        const title = streamObj.title;
-        const viewerCount = formatNumber(streamObj.viewer_count);
+            const streamObj = parsedObj.data[0];
+            const userName = streamObj.user_name;
+            const title = streamObj.title;
+            const viewerCount = formatNumber(streamObj.viewer_count);
 
-        const retString = `Title: ${title}. User: ${userName}. Viewers: ${viewerCount}`;
-        clientService.say(retString, channel);
+            const retString = `Title: ${title}. User: ${userName}. Viewers: ${viewerCount}`;
+            clientService.say(retString, channel);
+          })
+          .catch((e) => {
+            console.log(e);
+          });
       })
       .catch((e) => {});
   }

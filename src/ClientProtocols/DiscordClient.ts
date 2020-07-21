@@ -4,6 +4,8 @@ import ytdl from 'ytdl-core';
 import PluginsController from '../Plugins/PluginsController';
 import * as webLib from '../Libs/WebLib';
 import Jukebox, { IPlaylistItem, MP3s } from './Shared/Jukebox';
+// @ts-ignore
+import { API_KEYS } from '../../apikeys';
 
 // Used by discord internally when streaming music
 const request: Request = require('request');
@@ -159,13 +161,11 @@ class DiscordClient implements IClientProtocol {
         });
         appendStreamDispatcherEnd();
       } else if (webLib.REGEXP.SOUNDCLOUD.test(playlistItem.url)) {
-        //Just inspect the XHR requests in the browser for this
-        const CLIENT_ID = 'YUKXoArFcqrlQn9tfNHvvyfnDISj04zk';
         webLib.downloadPage(playlistItem.url).then((dataStr1) => {
-          let found = dataStr1.indexOf('/stream/hls');
-          let hlsUrl = dataStr1.substring(found - 100, found + 11);
+          const found = dataStr1.indexOf('/stream/hls');
+          const hlsUrl = dataStr1.substring(found - 100, found + 11);
           webLib
-            .downloadPage(hlsUrl + '?client_id=' + CLIENT_ID)
+            .downloadPage(hlsUrl + '?client_id=' + API_KEYS.SOUNDCLOUD)
             .then((dataStr2) => {
               this.say(
                 'Now Playing: ' + playlistItem.title,
