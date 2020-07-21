@@ -8,7 +8,7 @@ const SUPPORTED_DOMAINS: { [key: string]: string } = {
   www_blocket_se: 'www.blocket.se',
   www_webhallen_com: 'www.webhallen.com',
   www_inet_se: 'www.inet.se',
-  cdon_se: 'cdon.se',
+  cdon_se: 'b2c.cdon.se',
   www_tradera_com: 'www.tradera.com',
   www_clasohlson_com: 'www.clasohlson.com',
   www_kjell_com: 'www.kjell.com',
@@ -25,6 +25,11 @@ const replaceUrl = (url: string) => {
   }
   return url;
 };
+
+const cleanStrToInt = (str: string) => {
+  const clean = str.replace(/[^0-9]/g, '');
+  return parseInt(clean);
+}
 
 class PriceTitle implements IPluginChildInterface {
   constructor() {
@@ -91,7 +96,7 @@ class PriceTitle implements IPluginChildInterface {
             (() => {
               title = title.substring(0, title.lastIndexOf('(') - 1);
               const foundFixedPriceEl = document.querySelector(
-                '#view-item-main > div.view-item-details.view-item-details-bids > article > section > section.view-item-type-wrapper.view-item-bin-on-auction > div > form > button'
+                '#view-item-main > div.view-item-details.view-item-details-bids > article > section > section > div > h2'
               );
               const foundBiddingPriceEl = document.querySelector(
                 '#view-item-main > div.view-item-details.view-item-details-bids > article > div > ul > li:nth-child(1) > span.view-item-bidding-details-amount > span'
@@ -205,7 +210,7 @@ class PriceTitle implements IPluginChildInterface {
                     if (!isSmallMessage) {
                       titleText = `Title: ${name}. Price: ${formatNumber(
                         price
-                      )} kr (${percent}'% Off!)`;
+                      )} kr (${percent} % Off!)`;
                     } else {
                       titleText = `Price: ${formatNumber(
                         price
@@ -249,13 +254,13 @@ class PriceTitle implements IPluginChildInterface {
               let titleText = title;
 
               const activePriceEl = document.querySelector(
-                '#price-button-container > span'
+                '#buy-area__price-wrapper > div.buy-area__current-price'
               );
               let activePriceStr = activePriceEl.textContent;
               activePriceStr = activePriceStr.trim();
 
               const regularPriceEl = document.querySelector(
-                '#price-wrapper > div.default-price > span'
+                '#buy-area__price-wrapper > div.buy-area__ordinary-price > span.buy-area__original-price-withVat-consumer'
               );
               if (regularPriceEl) {
                 let regularPriceStr = regularPriceEl.textContent;
@@ -353,15 +358,32 @@ class PriceTitle implements IPluginChildInterface {
           case SUPPORTED_DOMAINS.www_komplett_se:
             (() => {
               let titleText = title;
-              const priceEl = document.querySelector('.product-price-now');
-              if (priceEl) {
-                let text = priceEl.textContent;
-                text = text.replace(':', '');
-                text = text.replace('-', '');
-                titleText += 'Price: ' + text + ' kr';
+
+              let oldPriceEl = document.querySelector('#MainContent > div > div.responsive-content-wrapper > div:nth-child(2) > div.product-page > section > div > section > div.product-main-info__body > div.product-main-info__buy-and-more > div.buy-button-section > div > div > div.price-freight-financing > div.price-freight > div.product-price-before');
+              let newPriceEl = document.querySelector('#MainContent > div > div.responsive-content-wrapper > div:nth-child(2) > div.product-page > section > div > section > div.product-main-info__body > div.product-main-info__buy-and-more > div.buy-button-section > div > div > div.price-freight-financing > div.price-freight > div.product-price > span');
+
+              const cleanPriceEl = (priceEl: any) => {
+                const text = priceEl.textContent;
+                return cleanStrToInt(text);
+              }
+
+              if (oldPriceEl) {
+                const oldPrice = cleanPriceEl(oldPriceEl);
+                const newPrice = cleanPriceEl(newPriceEl);
+
+                let percent = 1 - oldPrice / newPrice;
+                percent = percent * 100;
+                percent = Math.floor(percent);
+                titleText += 'Price: ' + newPrice + ' kr (' + percent + '% off!)';
+                clientService.say(titleText, channel);
+                return;
+              } else if (newPriceEl) {
+                const newPrice = cleanPriceEl(newPriceEl);
+                titleText += 'Price: ' + newPrice + ' kr';
                 clientService.say(titleText, channel);
                 return;
               }
+
               clientService.say(titleText, channel);
             })();
             break;
@@ -371,20 +393,17 @@ class PriceTitle implements IPluginChildInterface {
               let titleText = title;
 
               const activePriceEl = document.querySelector(
-                '#content > div.product-pip.js-product-pip > div.product-pip__top-container.flex.center-horizontal > div.product-pip__right-container > div.product-pip__price-package > div > p.js-pip-price-component.no-margin > span > span > span'
+                '#content > div > div > div > div.range-revamp-product__subgrid.product-pip.js-product-pip > div.range-revamp-product__buy-module-container.range-revamp-product__grid-gap > div > div.js-price-package.range-revamp-pip-price-package > div.range-revamp-pip-price-package__wrapper > div.range-revamp-pip-price-package__price-wrapper > div.range-revamp-pip-price-package__main-price > span > span.range-revamp-price__integer'
               );
               let activePriceStr = activePriceEl.textContent;
               activePriceStr = activePriceStr.trim();
 
               const regularPriceEl = document.querySelector(
-                '#content > div.product-pip.js-product-pip > div.product-pip__top-container.flex.center-horizontal > div.product-pip__right-container > div.product-pip__price-package > div > p.product-pip__previous-price > span > span.product-pip__product-price.bold'
+                '#content > div > div > div > div.range-revamp-product__subgrid.product-pip.js-product-pip > div.range-revamp-product__buy-module-container.range-revamp-product__grid-gap > div > div.js-price-package.range-revamp-pip-price-package > div.range-revamp-pip-price-package__wrapper > div.range-revamp-pip-price-package__price-wrapper > div.range-revamp-pip-price-package__previous-price-hasStrikeThrough > span > span.range-revamp-price__integer'
               );
               if (regularPriceEl) {
-                let regularPriceStr = regularPriceEl.textContent;
-                regularPriceStr = regularPriceStr.trim();
-
-                const priceActive = parseInt(activePriceStr);
-                const priceRegular = parseInt(regularPriceStr);
+                const priceActive = cleanStrToInt(activePriceEl.textContent);
+                const priceRegular = cleanStrToInt(regularPriceEl.textContent);
 
                 let percent = 1 - priceActive / priceRegular;
                 percent = percent * 100;
