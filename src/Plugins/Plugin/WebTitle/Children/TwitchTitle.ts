@@ -1,7 +1,7 @@
 import * as webLib from '../../../../Libs/WebLib';
 import { IClientService } from '../../../../Types/ClientMessage';
 import { IPluginChildInterface } from '../../../../Types/PluginInterface';
-import { formatNumber } from './PriceFormatter';
+import { formatNumber } from './utils';
 
 // @ts-ignore
 import { API_KEYS } from '../../../../../apikeys';

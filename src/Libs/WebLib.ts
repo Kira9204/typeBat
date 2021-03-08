@@ -5,7 +5,7 @@ import { Html5Entities } from 'html-entities';
 
 const TIMEOUT = 10000;
 const USERAGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36';
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.192 Safari/537.36';
 
 export const REGEXP = {
   YOUTUBE: /(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)((?:\/watch\?v=|\/)([^\s&]+))/,
@@ -16,7 +16,8 @@ export const REGEXP = {
   SPOTIFY: /https:\/\/open\.spotify\.com/,
   STEAM: /https:\/\/store\.steampowered\.com\/app\/(\d+)/,
   SVT: /https:\/\/www\.svtplay\.se\/video\/(\d+)/,
-  WEBHALLEN: /https:\/\/www\.webhallen\.com\/se\/product\/(\d+)/
+  WEBHALLEN: /https:\/\/www\.webhallen\.com\/se\/product\/(\d+)/,
+  BLOCKET: /https:\/\/www\.blocket\.se\/annons\/\w+\/[0-9a-z_-]+\/(\d+)/
 };
 
 const DEFAULT_HEADERS = {

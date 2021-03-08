@@ -1,6 +1,6 @@
 import moment from 'moment';
 import * as webLib from '../../../../Libs/WebLib';
-import { formatNumber } from './PriceFormatter';
+import { formatNumber } from './utils';
 // @ts-ignore
 import { API_KEYS } from '../../../../../apikeys';
 const API_KEY_YOUTUBE = API_KEYS.YOUTUBE;

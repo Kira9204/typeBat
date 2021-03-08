@@ -1,7 +1,7 @@
 import * as webLib from '../../../../Libs/WebLib';
 import { IClientService } from '../../../../Types/ClientMessage';
 import { IPluginChildInterface } from '../../../../Types/PluginInterface';
-import { formatNumber } from './PriceFormatter';
+import { formatNumber, formatDurationFromSecs } from './utils';
 
 interface iVideoModel {
   title: string;
@@ -24,27 +24,11 @@ const constructModel = (data: string) => {
   if (obj.stats_number_of_plays !== undefined) {
     numPlays = formatNumber(obj.stats_number_of_plays);
   }
-  let duration = obj.duration;
   let likes = '';
   if (obj.stats_number_of_likes) {
     likes = formatNumber(obj.stats_number_of_likes);
   }
-
-  const hours = Math.round((duration / 3600) % 24);
-  const minutes = Math.round((duration / 60) % 60);
-  const seconds = Math.round(duration % 60);
-
-  duration = '';
-  if (hours > 0) {
-    duration += '' + hours + 'h ';
-  }
-  if (minutes > 0) {
-    duration += '' + minutes + 'm ';
-  }
-  if (seconds > 0) {
-    duration += '' + seconds + 's';
-  }
-
+  const duration = formatDurationFromSecs(obj.duration);
   return {
     title,
     channel,

@@ -65,16 +65,15 @@ class HangoutsClient implements IClientProtocol {
         .done();
     };
 
-    this.client.on(EVT_TEXT_MESSAGE, this.onChannelMessage);
-    this.client.on(EVT_CONNECT_FAILED, (err: Error) => {
-      console.log('Hangouts error', err);
-      reconnect();
-    });
-
     this.client
       .connect(getCookiesObj())
       .then(() => {
         console.log('Hangouts: Logged in!');
+        this.client.on(EVT_TEXT_MESSAGE, this.onChannelMessage);
+        this.client.on(EVT_CONNECT_FAILED, (err: Error) => {
+          console.log('Hangouts error', err);
+          reconnect();
+        });
       })
       .done();
   }
